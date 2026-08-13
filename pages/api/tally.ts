@@ -33,16 +33,35 @@ export default async function handler(
 
   // Verificación de firma. Si defines TALLY_SIGNING_SECRET, nadie más
   // puede inyectar abogados falsos en tu base.
+  //
+  // Tally firma con HMAC-SHA256 en base64. Su ejemplo oficial calcula el
+  // hash sobre JSON.stringify(payload), no sobre los bytes recibidos.
+  // Las dos formas coinciden cuando el JSON viene compacto, pero no si
+  // trae espacios o saltos de línea. Aceptamos ambas para que un cambio
+  // de formato de su lado no tumbe el webhook en silencio.
   const secreto = process.env.TALLY_SIGNING_SECRET;
   if (secreto) {
     const firma = String(req.headers["tally-signature"] ?? "");
-    const esperada = crypto
-      .createHmac("sha256", secreto)
-      .update(crudo)
-      .digest("base64");
-    const a = Buffer.from(firma);
-    const b = Buffer.from(esperada);
-    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+
+    const candidatos = [crudo];
+    try {
+      candidatos.push(JSON.stringify(JSON.parse(crudo)));
+    } catch {
+      // Si no es JSON válido, la validación de más abajo lo rechaza.
+    }
+
+    const valida = candidatos.some((cuerpo) => {
+      const esperada = crypto
+        .createHmac("sha256", secreto)
+        .update(cuerpo, "utf8")
+        .digest("base64");
+      const a = Buffer.from(firma);
+      const b = Buffer.from(esperada);
+      return a.length === b.length && crypto.timingSafeEqual(a, b);
+    });
+
+    if (!valida) {
+      console.error("[tally] Firma inválida. Revisa TALLY_SIGNING_SECRET.");
       return res.status(401).json({ error: "Firma inválida." });
     }
   }
