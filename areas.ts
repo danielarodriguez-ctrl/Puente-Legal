@@ -52,14 +52,6 @@ export const AREAS: Area[] = [
     icono: "🕯️",
   },
   {
-    id: "desaparicion",
-    titulo: "Tengo un familiar desaparecido",
-    nombreJuridico: "Desaparición de personas y denuncias penales",
-    ejemplos:
-      "No sé dónde está mi familiar, necesito ayuda para denunciar o para buscarlo en hospitales y albergues.",
-    icono: "🔎",
-  },
-  {
     id: "salud",
     titulo: "Problemas con la EPS, la atención médica o la pensión",
     nombreJuridico: "Salud y seguridad social",
@@ -90,6 +82,22 @@ export const AREAS: Area[] = [
     ejemplos:
       "Quedé a cargo de un menor, problemas de custodia, cuota de alimentos, un niño quedó sin acudiente.",
     icono: "👨‍👩‍👧",
+  },
+  {
+    id: "penal",
+    titulo: "Fui víctima de un delito durante la emergencia",
+    nombreJuridico: "Derecho penal y atención a víctimas",
+    ejemplos:
+      "Entraron a robar a la casa o al local, me estafaron con una ayuda o un arreglo, alguien se aprovechó de la situación, necesito ayuda para denunciar.",
+    icono: "🚨",
+  },
+  {
+    id: "empresas",
+    titulo: "Tengo un negocio o emprendimiento afectado",
+    nombreJuridico: "Derecho comercial, societario y de empresa",
+    ejemplos:
+      "El local quedó dañado, no sé qué hacer con mis trabajadores, tengo deudas del negocio o contratos que no voy a poder cumplir.",
+    icono: "🏪",
   },
   {
     id: "otro",

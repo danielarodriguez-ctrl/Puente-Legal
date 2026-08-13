@@ -30,11 +30,12 @@ const MAPA_AREAS: Record<string, string[]> = {
   ayudas_estado: ["administrativ", "tutela", "petición", "peticion", "público", "publico", "constitucional", "humanitari", "estado"],
   documentos: ["registro civil", "notarial", "notaría", "notaria", "identificación", "documento"],
   fallecimiento: ["sucesi", "herencia", "mortuori", "defunción", "defuncion"],
-  desaparicion: ["penal", "desaparic", "denuncia", "víctimas", "victimas"],
   salud: ["salud", "eps", "pensi", "seguridad social", "arl", "riesgos laborales"],
   laboral: ["laboral", "trabajo", "empleo"],
-  deudas: ["financier", "deuda", "crédito", "credito", "insolvencia", "bancari", "comercial", "hipotec"],
+  deudas: ["financier", "deuda", "crédito", "credito", "insolvencia", "bancari", "hipotec"],
+  empresas: ["comercial", "societario", "mercantil", "corporativ", "empresa", "empresarial", "emprendimiento", "pyme"],
   familia: ["familia", "custodia", "alimentos", "menor", "infancia", "niñez", "ninez"],
+  penal: ["penal", "delito", "denuncia", "víctimas", "victimas", "criminal"],
   otro: ["general", "otro", "cualquier", "orientación", "orientacion"],
 };
 
