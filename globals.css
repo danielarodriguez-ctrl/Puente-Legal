@@ -28,16 +28,16 @@
     @apply w-full rounded-lg border-2 border-tinta/15 bg-white px-4 py-3 text-base
            placeholder:text-tinta/35 focus:border-acento focus:outline-none;
   }
-  .etiqueta {
-    @apply mb-2 block text-sm font-semibold text-tinta;
-  }
   .btn-primario {
     @apply inline-flex w-full items-center justify-center rounded-lg bg-acento px-6 py-4
-           text-base font-semibold text-white transition-colors hover:bg-acentoOscuro
-           disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto;
+           text-base font-semibold tracking-tight text-white transition-colors
+           hover:bg-acentoOscuro disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto;
   }
   .btn-secundario {
     @apply inline-flex items-center justify-center rounded-lg px-4 py-3 text-base
            font-medium text-tinta/70 underline underline-offset-4 hover:text-tinta;
+  }
+  .etiqueta {
+    @apply mb-2 block text-sm font-semibold text-tinta;
   }
 }

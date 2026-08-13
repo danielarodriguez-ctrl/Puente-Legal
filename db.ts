@@ -46,5 +46,6 @@ export type Caso = {
   urgencia: string;
   abogado_id: string | null;
   estado: string;
+  contactado_en: string | null;
   creado_en: string;
 };
