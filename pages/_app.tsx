@@ -23,21 +23,28 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <div className="flex min-h-screen flex-col font-sans">
-        <header className="border-b border-tinta/10 bg-white">
+        {/* Degradado de marca: naranja a la izquierda, rojo a la derecha.
+            El texto va en blanco puro, sin transparencias: sobre el naranja
+            cualquier opacidad lo vuelve ilegible al sol, que es como mucha
+            gente va a abrir esto. */}
+        <header className="bg-gradient-to-r from-alerta to-acento text-white">
           <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
             {/* En celular la bajada va debajo del nombre. Puestas en fila
                 se parten a la mitad en pantallas de 360 px. */}
-            <a href="/" className="leading-tight">
-              <span className="block text-base font-bold tracking-tight sm:text-lg">
+            <a
+              href="/"
+              className="leading-tight text-white focus-visible:ring-white focus-visible:ring-offset-0"
+            >
+              {/* 20 px en negrita: por encima de ese tamaño el blanco sobre
+                  el naranja ya cumple el mínimo de contraste. */}
+              <span className="block text-xl font-bold tracking-tight">
                 Puente Legal
               </span>
-              <span className="block text-[11px] text-tinta/55 sm:text-xs">
-                Todos por Colombia
-              </span>
+              <span className="block text-xs sm:text-sm">Todos por Colombia</span>
             </a>
             <a
               href="/abogados"
-              className="whitespace-nowrap text-sm font-semibold text-acentoOscuro underline underline-offset-4"
+              className="whitespace-nowrap text-sm font-semibold text-white underline decoration-2 underline-offset-4 focus-visible:ring-white focus-visible:ring-offset-0"
             >
               Quiero sumarme
             </a>
