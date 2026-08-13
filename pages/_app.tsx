@@ -25,17 +25,21 @@ export default function App({ Component, pageProps }: AppProps) {
       <div className="flex min-h-screen flex-col font-sans">
         <header className="border-b border-tinta/10 bg-white">
           <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
-            <a href="/" className="flex items-baseline gap-2">
-              <span className="text-lg font-bold tracking-tight">Puente Legal</span>
-              <span className="hidden text-sm text-tinta/50 sm:inline">
-                Terremoto Colombia
+            {/* En celular la bajada va debajo del nombre. Puestas en fila
+                se parten a la mitad en pantallas de 360 px. */}
+            <a href="/" className="leading-tight">
+              <span className="block text-base font-bold tracking-tight sm:text-lg">
+                Puente Legal
+              </span>
+              <span className="block text-[11px] text-tinta/55 sm:text-xs">
+                Todos por Colombia
               </span>
             </a>
             <a
               href="/abogados"
-              className="text-sm font-semibold text-acentoOscuro underline underline-offset-4"
+              className="whitespace-nowrap text-sm font-semibold text-acentoOscuro underline underline-offset-4"
             >
-              Soy abogado
+              Quiero sumarme
             </a>
           </div>
         </header>
