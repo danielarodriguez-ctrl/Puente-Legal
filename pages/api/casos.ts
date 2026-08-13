@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabaseAdmin, type Abogado, type Caso } from "@/db";
 import { AREAS_POR_ID } from "@/areas";
-import { notificarAbogado } from "@/email";
+import { confirmarPersona, notificarAbogado } from "@/email";
 
 export default async function handler(
   req: NextApiRequest,
@@ -104,9 +104,14 @@ export default async function handler(
       .json({ error: "No pudimos guardar tu caso. Inténtalo de nuevo." });
   }
 
-  // -------- Notificación --------
+  // -------- Notificaciones --------
+  // Al abogado siempre; a la persona solo si dejó correo.
+  // Si alguno falla, el caso ya quedó guardado y visible en el panel.
   if (abogado) {
-    await notificarAbogado(caso as Caso, abogado);
+    await Promise.allSettled([
+      notificarAbogado(caso as Caso, abogado),
+      confirmarPersona(caso as Caso, abogado),
+    ]);
   }
 
   return res.status(200).json({
