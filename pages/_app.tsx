@@ -58,8 +58,12 @@ export default function App({ Component, pageProps }: AppProps) {
         <footer className="border-t border-tinta/10 bg-white">
           <div className="mx-auto max-w-3xl space-y-3 px-5 py-8 text-sm text-tinta/60">
             <p>
-              Puente Legal conecta a personas afectadas por el terremoto con abogados
-              que donan su tiempo. No cobramos nada, ni a la persona ni al abogado.
+             Puente Legal es una iniciativa de{" "}
+              <strong className="font-semibold text-tinta/75">
+                Legal Hackers Bogotá
+              </strong>{" "}
+              que conecta a personas afectadas por el terremoto con abogados que
+              donan su tiempo. No cobramos nada, ni a la persona ni al abogado.
             </p>
             <p>
               Este servicio ofrece orientación jurídica. No reemplaza la representación
