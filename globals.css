@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-arena text-tinta antialiased;
+  }
+  /* Objetivos táctiles grandes: mucha gente entra desde un celular
+     de gama baja, a veces con la pantalla rota. */
+  button,
+  a[role="button"],
+  input,
+  select,
+  textarea {
+    @apply min-h-[48px];
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-acento ring-offset-2 ring-offset-arena;
+  }
+}
+
+@layer components {
+  .campo {
+    @apply w-full rounded-lg border-2 border-tinta/15 bg-white px-4 py-3 text-base
+           placeholder:text-tinta/35 focus:border-acento focus:outline-none;
+  }
+  .etiqueta {
+    @apply mb-2 block text-sm font-semibold text-tinta;
+  }
+  .btn-primario {
+    @apply inline-flex w-full items-center justify-center rounded-lg bg-acento px-6 py-4
+           text-base font-semibold text-white transition-colors hover:bg-acentoOscuro
+           disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto;
+  }
+  .btn-secundario {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-3 text-base
+           font-medium text-tinta/70 underline underline-offset-4 hover:text-tinta;
+  }
+}
