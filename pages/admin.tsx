@@ -4,11 +4,31 @@ import { AREAS_POR_ID } from "@/areas";
 
 const COOKIE = "pl_admin";
 
+const HORAS_LIMITE = 48;
+
+/** Un caso está vencido si lleva más de 48 horas asignado y nadie lo ha contactado. */
+function estaVencido(c: Caso) {
+  if (c.estado !== "asignado" || c.contactado_en) return false;
+  const horas = (Date.now() - new Date(c.creado_en).getTime()) / 36e5;
+  return horas > HORAS_LIMITE;
+}
+
+function hace(fecha: string) {
+  const horas = Math.floor((Date.now() - new Date(fecha).getTime()) / 36e5);
+  if (horas < 1) return "hace minutos";
+  if (horas < 24) return `hace ${horas} h`;
+  const dias = Math.floor(horas / 24);
+  return `hace ${dias} ${dias === 1 ? "día" : "días"}`;
+}
+
+// El rojo y el naranja quedan reservados para lo que necesita atención.
+// Lo que ya está resuelto va en gris: si todo estuviera de color, nada
+// resaltaría.
 const COLOR_ESTADO: Record<string, string> = {
-  asignado: "bg-acento/15 text-acentoOscuro",
-  sin_abogado: "bg-alerta/15 text-alerta",
-  contactado: "bg-tinta/10 text-tinta",
-  cerrado: "bg-tinta/10 text-tinta/50",
+  asignado: "bg-tinta/10 text-tinta",
+  sin_abogado: "bg-alerta/20 text-alertaOscuro",
+  contactado: "bg-tinta/5 text-tinta/70",
+  cerrado: "bg-tinta/5 text-tinta/40",
 };
 
 type Props = {
@@ -88,6 +108,7 @@ export default function Admin({
 
   const porId = new Map(abogados.map((a) => [a.id, a]));
   const sinAsignar = casos.filter((c) => c.estado === "sin_abogado").length;
+  const vencidos = casos.filter(estaVencido).length;
   const activos = abogados.filter((a) => a.activo).length;
 
   return (
@@ -104,8 +125,8 @@ export default function Admin({
         {[
           ["Casos totales", casos.length],
           ["Sin abogado", sinAsignar],
+          ["Sin contactar +48h", vencidos],
           ["Abogados activos", activos],
-          ["Abogados en lista", abogados.length],
         ].map(([k, v]) => (
           <div
             key={k as string}
@@ -120,21 +141,31 @@ export default function Admin({
       {/* Casos */}
       <h2 className="mt-10 text-lg font-semibold">Casos</h2>
       <div className="mt-3 overflow-x-auto rounded-lg border-2 border-tinta/15 bg-white">
-        <table className="w-full min-w-[860px] text-left text-sm">
+        <table className="w-full min-w-[980px] text-left text-sm">
           <thead className="border-b border-tinta/10 text-xs uppercase tracking-wide text-tinta/50">
             <tr>
               <th className="px-3 py-3">Radicado</th>
               <th className="px-3 py-3">Área</th>
               <th className="px-3 py-3">Persona</th>
-              <th className="px-3 py-3">Contacto</th>
+              <th className="px-3 py-3">Teléfono</th>
               <th className="px-3 py-3">Abogado</th>
+              <th className="px-3 py-3">¿Ya contactó?</th>
               <th className="px-3 py-3">Estado</th>
               <th className="px-3 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-tinta/10">
             {casos.map((c) => (
-              <tr key={c.id} className={c.urgencia === "alta" ? "bg-alerta/5" : ""}>
+              <tr
+                key={c.id}
+                className={
+                  estaVencido(c)
+                    ? "bg-alerta/10"
+                    : c.urgencia === "alta"
+                      ? "bg-acento/5"
+                      : ""
+                }
+              >
                 <td className="whitespace-nowrap px-3 py-3 font-mono text-xs">
                   {c.radicado}
                   {c.urgencia === "alta" && (
@@ -148,16 +179,31 @@ export default function Admin({
                 </td>
                 <td className="px-3 py-3">{c.nombre_persona}</td>
                 <td className="whitespace-nowrap px-3 py-3">
-                  <a href={`tel:${c.telefono_persona}`} className="text-acento underline">
+                  <a href={`tel:${c.telefono_persona}`} className="text-acentoOscuro underline">
                     {c.telefono_persona}
                   </a>
                 </td>
                 <td className="px-3 py-3">
                   {c.abogado_id ? porId.get(c.abogado_id)?.nombre ?? "—" : "—"}
                 </td>
-                <td className="px-3 py-3">
+                <td className="whitespace-nowrap px-3 py-3">
+                  {c.contactado_en ? (
+                    <span className="text-tinta">
+                      Sí · {hace(c.contactado_en)}
+                    </span>
+                  ) : estaVencido(c) ? (
+                    <span className="font-semibold text-alertaOscuro">
+                      Vencido · {hace(c.creado_en)}
+                    </span>
+                  ) : (
+                    <span className="text-tinta/50">
+                      Pendiente · {hace(c.creado_en)}
+                    </span>
+                  )}
+                </td>
+                <td className="whitespace-nowrap px-3 py-3">
                   <span
-                    className={`rounded px-2 py-1 text-xs font-medium ${
+                    className={`whitespace-nowrap rounded px-2 py-1 text-xs font-medium ${
                       COLOR_ESTADO[c.estado] ?? "bg-tinta/10"
                     }`}
                   >
@@ -177,7 +223,7 @@ export default function Admin({
             ))}
             {casos.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-tinta/50">
+                <td colSpan={8} className="px-3 py-8 text-center text-tinta/50">
                   Todavía no hay casos registrados.
                 </td>
               </tr>
