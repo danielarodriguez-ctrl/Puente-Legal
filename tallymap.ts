@@ -23,12 +23,61 @@ const CLAVES = {
   cupo: ["cuántos casos", "cuantos casos", "cupo", "capacidad", "disponibilidad"],
 };
 
-// Palabras que aparecen en las opciones del formulario → área de la plataforma.
+// ============================================================
+// CRUCE ENTRE EL FORMULARIO DE ABOGADOS Y LAS CATEGORÍAS
+// ============================================================
+//
+// El abogado elige por rama del derecho. La persona afectada elige por
+// lo que le pasó. No son la misma lista y no tienen por qué serlo: una
+// especialidad puede atender varias situaciones.
+//
+// Este es el cruce, opción por opción, según el formulario de Tally.
+// Si cambias una opción allá, ajusta la palabra ancla de acá.
+
+// Se calcula desde la lista real de categorías: si mañana agregas una,
+// quien marcó "todas" la recibe sin que haya que tocar nada acá.
+const TODAS = AREAS.map((a) => a.id);
+
+const CRUCE: { ancla: string; areas: string[] }[] = [
+  // H · Puedo atender todas las categorías
+  //     Va de primera: quien marca esta opción cubre todo el abanico.
+  { ancla: "todas las categor", areas: TODAS },
+
+  // A · Derecho Civil / inmobiliario / Propiedad / Arrendamientos
+  { ancla: "inmobiliario", areas: ["vivienda", "deudas"] },
+
+  // B · Derecho Administrativo / Tutelas - Derechos de petición
+  //     Recuperar cédula o registro civil es trámite registral, y las
+  //     tutelas de salud son el pan de cada día de este perfil.
+  //     Conserva "otro" como respaldo: si nadie marcó la opción de
+  //     todas las categorías, alguien tiene que recibir los casos que
+  //     llegan sin categoría clara.
+  { ancla: "administrativo", areas: ["ayudas_estado", "documentos", "salud", "otro"] },
+
+  // C · Seguros / Reclamaciones aseguradoras
+  { ancla: "seguros", areas: ["seguros"] },
+
+  // D · Derecho de Familia
+  //     En la práctica quien lleva familia lleva sucesiones.
+  { ancla: "familia", areas: ["familia", "fallecimiento"] },
+
+  // E · Derecho Laboral
+  { ancla: "laboral", areas: ["laboral"] },
+
+  // F · Empresas, comercial y emprendimiento
+  { ancla: "empresas", areas: ["empresas", "deudas"] },
+
+  // G · Derecho Penal
+  { ancla: "penal", areas: ["penal"] },
+];
+
+// Respaldo por palabras sueltas, para cuando alguien escribe libre o si
+// se agrega una opción nueva sin actualizar el cruce de arriba.
 const MAPA_AREAS: Record<string, string[]> = {
   vivienda: ["vivienda", "arrend", "arriendo", "inmobiliar", "propiedad horizontal", "urban"],
   seguros: ["seguro", "póliza", "poliza", "asegurad"],
-  ayudas_estado: ["administrativ", "tutela", "petición", "peticion", "público", "publico", "constitucional", "humanitari", "estado"],
-  documentos: ["registro civil", "notarial", "notaría", "notaria", "identificación", "documento"],
+  ayudas_estado: ["administrativ", "tutela", "petición", "peticion", "público", "publico", "constitucional", "humanitari"],
+  documentos: ["registro civil", "notarial", "notaría", "notaria", "identificación", "documento", "cédula", "cedula"],
   fallecimiento: ["sucesi", "herencia", "mortuori", "defunción", "defuncion"],
   salud: ["salud", "eps", "pensi", "seguridad social", "arl", "riesgos laborales"],
   laboral: ["laboral", "trabajo", "empleo"],
@@ -38,10 +87,6 @@ const MAPA_AREAS: Record<string, string[]> = {
   penal: ["penal", "delito", "denuncia", "víctimas", "victimas", "criminal"],
   otro: ["general", "otro", "cualquier", "orientación", "orientacion"],
 };
-
-// "Civil" es ambiguo en la práctica: cubre tanto contratos de vivienda
-// como obligaciones y deudas. Se habilita en las dos filas.
-const AREAS_CIVIL = ["vivienda", "deudas"];
 
 const IDS_VALIDOS = new Set(AREAS.map((a) => a.id));
 
@@ -93,25 +138,28 @@ export function mapearAreas(etiquetas: string[]): string[] {
   for (const etiqueta of etiquetas) {
     const n = normalizar(etiqueta);
 
-    // Coincidencia directa con un id de la plataforma (por si el formulario
-    // ya usa nuestros identificadores).
+    // Coincidencia directa con un id de la plataforma.
     if (IDS_VALIDOS.has(n)) {
       encontradas.add(n);
       continue;
     }
 
+    // 1. El cruce explícito manda.
+    const cruce = CRUCE.find((c) => n.includes(normalizar(c.ancla)));
+    if (cruce) {
+      cruce.areas.forEach((a) => encontradas.add(a));
+      continue;
+    }
+
+    // 2. Si no reconoce la opción, cae al respaldo por palabras sueltas.
     for (const [areaId, palabras] of Object.entries(MAPA_AREAS)) {
       if (palabras.some((p) => n.includes(normalizar(p)))) {
         encontradas.add(areaId);
       }
     }
-
-    if (n.includes("civil")) {
-      AREAS_CIVIL.forEach((a) => encontradas.add(a));
-    }
   }
 
-  return [...encontradas];
+  return [...encontradas].filter((a) => IDS_VALIDOS.has(a));
 }
 
 export function mapearAbogado(payload: any) {
